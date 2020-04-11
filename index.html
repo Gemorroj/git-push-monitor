@@ -1,25 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8"/>
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self';" />
+    <meta charset="UTF-8" />
     <title>Git Push Monitor</title>
 </head>
 <body>
 <h1>Hello</h1>
 <div>
-    <input type="text" id="gitPath"/>
+    <input type="text" id="gitPath" />
 </div>
-
-<script>
-    const {store} = require('./store');
-    const {ipcRenderer} = require('electron');
-
-    const gitPath = document.getElementById('gitPath');
-    gitPath.value = store.get('gitPath');
-
-    gitPath.addEventListener('change', e => {
-        ipcRenderer.send('store.gitPath', e.target.value);
-    });
-</script>
 </body>
 </html>

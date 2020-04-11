@@ -1,16 +1,33 @@
 {
     "name": "git-push-monitor",
+    "description": "Monitor git pushes and show notifications",
     "version": "1.0.0",
     "main": "main.js",
     "author": "Gemorroj",
     "scripts": {
-        "start": "electron ."
+        "start": "electron .",
+        "pack": "electron-builder --dir",
+        "dist": "electron-builder"
     },
     "license": "MIT",
     "dependencies": {
         "electron-store": "^5.1.1"
     },
     "devDependencies": {
-        "electron": "^9.0.0-beta.15"
+        "electron": "^9.0.0-beta.15",
+        "electron-builder": "^22.4.1"
+    },
+    "build": {
+        "appId": "git-push-monitor",
+        "win": {
+            "target": [
+                {
+                    "target": "portable",
+                    "arch": [
+                        "x64"
+                    ]
+                }
+            ]
+        }
     }
 }

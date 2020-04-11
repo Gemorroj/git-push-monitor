@@ -1,6 +1,6 @@
 const Store = require('electron-store');
 
-const store = new Store({
+module.exports.store = new Store({
     schema: {
         gitPath: {
             type: 'string',
@@ -16,5 +16,3 @@ const store = new Store({
         }
     }
 });
-
-module.exports.store = store;

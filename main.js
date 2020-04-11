@@ -1,6 +1,6 @@
 const {app, Menu, Tray, BrowserWindow, dialog, ipcMain} = require('electron');
 const {store} = require('./store');
-
+const path = require('path');
 
 ipcMain.on('store.gitPath', (event, arg) => {
     store.set('gitPath', arg);
@@ -22,15 +22,17 @@ const onShow = (menuItem, browserWindow, event) => {
         width: 800,
         height: 600,
         webPreferences: {
-            nodeIntegration: true
+            contextIsolation: true,
+            enableRemoteModule: true,
+            preload: path.join(__dirname, 'preload.js')
         }
     });
 
-    mainWindow.loadFile('./index.html');
+    mainWindow.loadFile(path.join(__dirname, 'index.html'));
 };
 
 app.whenReady().then(() => {
-    const tray = new Tray('./favicon.ico');
+    const tray = new Tray(path.join(__dirname, 'icon.png'));
     tray.setToolTip('Git Push Monitor');
     tray.setContextMenu(Menu.buildFromTemplate([
         {label: 'Show', type: 'normal', click: onShow},
