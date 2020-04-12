@@ -2,7 +2,7 @@
     "name": "git-push-monitor",
     "description": "Monitor git pushes and show notifications",
     "version": "1.0.0",
-    "main": "main.js",
+    "main": "src/main.js",
     "author": "Gemorroj",
     "scripts": {
         "start": "electron .",
