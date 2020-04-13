@@ -6,9 +6,17 @@
     <title>Git Push Monitor</title>
 </head>
 <body>
-<h1>Hello</h1>
-<div>
+<fieldset>
+    <legend>Git path</legend>
     <input type="text" id="gitPath" readonly="readonly" /> <input type="button" id="gitPathBtn" value="Select path to git" />
-</div>
+</fieldset>
+
+<br />
+<fieldset>
+    <legend>Repositories</legend>
+    <input type="button" id="repositoriesAddBtn" value="Add git repository" />
+    <br />
+    <table id="repositories"></table>
+</fieldset>
 </body>
 </html>

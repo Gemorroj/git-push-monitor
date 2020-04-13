@@ -5,6 +5,9 @@ const path = require('path');
 ipcMain.on('store.gitPath', (event, arg) => {
     store.set('gitPath', arg);
 });
+ipcMain.on('store.repositories', (event, arg) => {
+    store.set('repositories', arg);
+});
 
 
 const onExit = (menuItem, browserWindow, event) => {
