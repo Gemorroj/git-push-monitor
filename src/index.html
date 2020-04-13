@@ -4,6 +4,49 @@
     <meta http-equiv="Content-Security-Policy" content="script-src 'self';" />
     <meta charset="UTF-8" />
     <title>Git Push Monitor</title>
+    <style>
+        #repositories td:nth-child(1) {
+            width: 50%;
+        }
+        #repositories td:nth-child(2) {
+            width: 50%;
+        }
+        #repositories td:nth-child(3) {
+            min-width: 50px;
+        }
+        fieldset {
+            border-radius: 4px;
+        }
+
+        #repositories {
+            border: 1px solid #69c;
+        }
+        #repositories th {
+            font-weight: normal;
+            color: #039;
+            padding: 10px;
+        }
+        #repositories td {
+            color: #669;
+            border-top: 1px dashed #fff;
+            padding: 4px;
+            background: #ccddff;
+        }
+        #repositories tr:hover td {
+            background: #99bcff;
+        }
+
+        #repositories td input:nth-child(1) {
+            background-color: #090;
+        }
+        #repositories td input:nth-child(2) {
+            background-color: #b00;
+        }
+
+        input[type="button"] {
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
 <fieldset>
@@ -16,7 +59,18 @@
     <legend>Repositories</legend>
     <input type="button" id="repositoriesAddBtn" value="Add git repository" />
     <br />
-    <table id="repositories"></table>
+    <table id="repositories">
+        <tr>
+            <th>Path</th>
+            <th>Info</th>
+            <th>Action</th>
+        </tr>
+    </table>
 </fieldset>
+
+<dialog id="dialog">
+    <div id="dialogContent"></div>
+    <input type="button" id="dialogCloseBtn" value="Close" />
+</dialog>
 </body>
 </html>

@@ -27,7 +27,7 @@ const onShow = (menuItem, browserWindow, event) => {
         webPreferences: {
             contextIsolation: true,
             enableRemoteModule: true,
-            preload: path.join(__dirname, 'preload.js')
+            preload: path.join(__dirname, 'index.js')
         }
     });
 
