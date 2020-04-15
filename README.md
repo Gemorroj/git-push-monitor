@@ -12,3 +12,8 @@ WIP
 yarn install
 yarn start
 ```
+
+
+TODO:
+- use TypeScript
+- 

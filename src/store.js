@@ -1,11 +1,6 @@
 const Store = require('electron-store');
-const yaml = require('js-yaml');
 
 module.exports.store = new Store({
-    fileExtension: 'yaml',
-    serialize: yaml.safeDump,
-    deserialize: yaml.safeLoad,
-
     schema: {
         gitPath: {
             type: 'string',
