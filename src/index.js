@@ -9,6 +9,10 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     const gitPath = document.getElementById('gitPath');
     /**
+     * @type {HTMLDivElement}
+     */
+    const gitPathInfo = document.getElementById('gitPathInfo');
+    /**
      * @type {HTMLButtonElement}
      */
     const gitPathBtn = document.getElementById('gitPathBtn');
@@ -23,28 +27,34 @@ document.addEventListener('DOMContentLoaded', () => {
     /**
      * @type {HTMLDialogElement}
      */
-    const dialog = document.getElementById('dialog');
+    const modalWindow = document.getElementById('modalWindow');
     /**
      * @type {HTMLButtonElement}
      */
-    const dialogCloseBtn = document.getElementById('dialogCloseBtn');
+    const modalWindowCloseBtn = document.getElementById('modalWindowCloseBtn');
     /**
      * @type {HTMLDivElement}
      */
-    const dialogContent = document.getElementById('dialogContent');
+    const modalWindowContent = document.getElementById('modalWindowContent');
 
     const setGitPath = (path) => {
         ipcRenderer.send('store.gitPath', path);
+        setGitPathToView(path);
+    };
+    const setGitPathToView = (path) => {
         gitPath.value = path;
+
+        const bat = spawnSync(path, ['--version']);
+        const err = bat.stderr ? bat.stderr.toString() : null;
+        const out = bat.stdout ? bat.stdout.toString() : null;
+
+        gitPathInfo.innerText = err ? err : out;
     };
 
     const removeRepository = (path) => {
         let storeRepositories = store.get('repositories') || [];
-        if (!storeRepositories.includes(path)) {
-            return;
-        }
 
-        storeRepositories = storeRepositories.filter(item => item !== path);
+        storeRepositories = storeRepositories.filter(item => item.path !== path);
 
         ipcRenderer.send('store.repositories', storeRepositories);
 
@@ -55,15 +65,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    const addRepositoryToView = (path) => {
+    const addRepositoryToView = (repositoryPath) => {
         const row = repositories.insertRow();
-        row.insertCell().innerText = path;
+        row.insertCell().innerText = repositoryPath;
 
-        const bat = spawnSync(store.get('gitPath'), ['status', '--short'], {
-            cwd: path
+        const bat = spawnSync(store.get('gitPath'), ['count-objects', '--human-readable'], {
+            cwd: repositoryPath
         });
-        const err = bat.stderr.toString();
-        const out = bat.stdout.toString();
+        const err = bat.stderr ? bat.stderr.toString() : null;
+        const out = bat.stdout ? bat.stdout.toString() : null;
 
         row.insertCell().innerText = err ? err : out;
         row.insertCell().innerHTML = `<input type="button" value="C" title="Config" /> <input type="button" value="R" title="Remove" />`;
@@ -71,12 +81,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const addRepository = (path) => {
         const storeRepositories = store.get('repositories') || [];
-        if (storeRepositories.includes(path)) {
-            return;
+        for (let storeRepository of storeRepositories) {
+            if (storeRepository.path === path) {
+                return;
+            }
         }
 
-        storeRepositories.push(path);
-
+        storeRepositories.push({
+            path: path,
+            lastCommit: new Date().toISOString()
+        });
         ipcRenderer.send('store.repositories', storeRepositories);
 
         addRepositoryToView(path);
@@ -86,10 +100,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // initialization
     (() => {
-        gitPath.value = store.get('gitPath');
+        setGitPathToView(store.get('gitPath'));
 
-        (store.get('repositories') || []).forEach(path => {
-            addRepositoryToView(path);
+        (store.get('repositories') || []).forEach(repository => {
+            addRepositoryToView(repository.path);
         });
     })();
 
@@ -129,10 +143,10 @@ document.addEventListener('DOMContentLoaded', () => {
              */
             const row = e.target.parentElement.parentElement;
 
-            dialogContent.innerHTML = row.toString() ; // todo
-            dialog.showModal();
+            modalWindowContent.innerText = row.innerHTML; // todo
+            modalWindow.showModal();
         }
     });
 
-    dialogCloseBtn.addEventListener('click', () => dialog.close());
+    modalWindowCloseBtn.addEventListener('click', () => modalWindow.close());
 });
