@@ -2,20 +2,24 @@
     "name": "git-push-monitor",
     "description": "Monitor git pushes and show notifications",
     "version": "1.0.0",
-    "main": "src/main.js",
     "author": "Gemorroj",
     "scripts": {
-        "start": "electron .",
-        "pack": "electron-builder --dir",
+        "start": "copyfiles -f \"./src/*.html\" \"./src/*.png\" ./dist && tsc && electron ./dist/main.js",
         "dist": "electron-builder"
     },
     "license": "MIT",
     "dependencies": {
-        "electron-store": "^5.1.1"
+        "electron-store": "^5.1.1",
+        "isomorphic-git": "^1.3.1"
     },
     "devDependencies": {
+        "copyfiles": "^2.2.0",
         "electron": "^9.0.0-beta.16",
-        "electron-builder": "^22.4.1"
+        "electron-builder": "^22.4.1",
+        "typescript": "^3.8.3"
+    },
+    "engines": {
+        "node": ">=12"
     },
     "build": {
         "appId": "git-push-monitor",

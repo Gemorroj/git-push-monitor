@@ -1,11 +1,19 @@
-const Store = require('electron-store');
+import * as Store from 'electron-store'
 
-module.exports.store = new Store({
+export const DEFAULT_REPOSITORY_INTERVAL = 60;
+
+export type TypedStoreRepository = {
+    path: string,
+    interval: number,
+    lastCommit: string
+};
+
+export type TypedStore = {
+    repositories: TypedStoreRepository[]
+};
+
+export const store = new Store<TypedStore>({
     schema: {
-        gitPath: {
-            type: 'string',
-            default: 'git'
-        },
         repositories: {
             type: 'array',
             items: {
@@ -17,7 +25,7 @@ module.exports.store = new Store({
                     interval: { // interval seconds
                         type: 'number',
                         minimum: 1,
-                        default: 60
+                        default: DEFAULT_REPOSITORY_INTERVAL
                     },
                     lastCommit: {
                         type: 'string',

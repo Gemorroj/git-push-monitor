@@ -6,12 +6,9 @@
     <title>Git Push Monitor</title>
     <style>
         #repositories td:nth-child(1) {
-            width: 50%;
+            width: 100%;
         }
         #repositories td:nth-child(2) {
-            width: 50%;
-        }
-        #repositories td:nth-child(3) {
             min-width: 50px;
         }
         fieldset {
@@ -50,20 +47,12 @@
 </head>
 <body>
 <fieldset>
-    <legend>Git path</legend>
-    <input type="text" id="gitPath" readonly="readonly" /> <input type="button" id="gitPathBtn" value="Select path to git" />
-    <div id="gitPathInfo"></div>
-</fieldset>
-
-<br />
-<fieldset>
     <legend>Repositories</legend>
     <input type="button" id="repositoriesAddBtn" value="Add git repository" />
     <br />
     <table id="repositories">
         <tr>
             <th>Path</th>
-            <th>Info</th>
             <th>Action</th>
         </tr>
     </table>
