@@ -1,37 +1,67 @@
-import {DEFAULT_REPOSITORY_INTERVAL, store} from './store';
+import {DEFAULT_REPOSITORY_INTERVAL, store, TypedStoreRepository} from './store';
 import {ipcRenderer, remote} from 'electron';
+import git from 'isomorphic-git';
+import * as fs from 'fs';
 
 window.addEventListener('DOMContentLoaded', () => {
     const repositoriesAddBtn = document.getElementById('repositoriesAddBtn') as HTMLButtonElement;
-    const repositories = document.getElementById('repositories') as HTMLTableElement;
+    const repositoriesTable = document.getElementById('repositories') as HTMLTableElement;
     const modalWindow = document.getElementById('modalWindow') as HTMLDialogElement;
     const modalWindowCloseBtn = document.getElementById('modalWindowCloseBtn') as HTMLButtonElement;
-    const modalWindowContent = document.getElementById('modalWindowContent') as HTMLDivElement;
+    const refsSelect = document.getElementById('refs') as HTMLSelectElement;
+    const intervalInput = document.getElementById('interval') as HTMLInputElement;
+
+    const getStoreRepository = (gitPath: string): TypedStoreRepository|undefined => {
+        let storeRepositories = store.get('repositories');
+        return storeRepositories.find(item => item.path === gitPath);
+    };
+
+    const listRemotes = (gitPath: string): Promise<{name: string, branches: string[]}[]> => {
+        return new Promise((resolve, reject) => {
+            git.listRemotes({
+                fs,
+                dir: gitPath
+            }).then(remotes => {
+                let branchesPromises: Promise<{name: string, branches: string[]}>[] = [];
+                remotes.forEach(remote => {
+                    branchesPromises.push(git.listBranches({
+                        fs,
+                        dir: gitPath,
+                        remote: remote.remote
+                    }).then(branches => {
+                        return {name: remote.remote, branches};
+                    }));
+                });
+                Promise.all(branchesPromises).then(data => {
+                    resolve(data);
+                });
+            });
+        });
+    };
 
     const removeRepository = (path: string) => {
-        let storeRepositories = store.get('repositories') || [];
-
+        let storeRepositories = store.get('repositories');
         storeRepositories = storeRepositories.filter(item => item.path !== path);
 
         ipcRenderer.send('store.repositories', storeRepositories);
 
-        for (let i = 0; i < repositories.rows.length; ++i) {
-            const row = repositories.rows[i];
-            const firstCell = row.cells.item(0);
+        for (let i = 0; i < repositoriesTable.rows.length; ++i) {
+            let row = repositoriesTable.rows[i];
+            let firstCell = row.cells.item(0);
             if (firstCell && path === firstCell.innerText) {
-                repositories.deleteRow(row.rowIndex);
+                repositoriesTable.deleteRow(row.rowIndex);
             }
         }
     };
 
     const addRepositoryToView = (repositoryPath: string) => {
-        const row = repositories.insertRow();
+        let row = repositoriesTable.insertRow();
         row.insertCell().innerText = repositoryPath;
         row.insertCell().innerHTML = `<input type="button" value="C" title="Config" /> <input type="button" value="R" title="Remove" />`;
     };
 
     const addRepository = (path: string) => {
-        const storeRepositories = store.get('repositories') || [];
+        let storeRepositories = store.get('repositories');
         for (let storeRepository of storeRepositories) {
             if (storeRepository.path === path) {
                 return;
@@ -41,7 +71,7 @@ window.addEventListener('DOMContentLoaded', () => {
         storeRepositories.push({
             path: path,
             interval: DEFAULT_REPOSITORY_INTERVAL,
-            lastCommit: new Date().toISOString()
+            remotes: []
         });
         ipcRenderer.send('store.repositories', storeRepositories);
 
@@ -52,7 +82,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // initialization
     (() => {
-        (store.get('repositories') || []).forEach(repository => {
+        store.get('repositories').forEach(repository => {
             addRepositoryToView(repository.path);
         });
     })();
@@ -65,27 +95,115 @@ window.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    repositories.addEventListener('click', (e) => {
+    repositoriesTable.addEventListener('click', (e) => {
         if (!e.target || 'INPUT' !== (e.target as HTMLElement).tagName) {
             return;
         }
-        const target = e.target as HTMLInputElement;
+        let target = e.target as HTMLInputElement;
 
         if ('R' === target.value) { // Remove
-            const row = (target.parentElement as HTMLTableCellElement).parentElement as HTMLTableRowElement;
-            const firstCell = row.cells.item(0);
-            if (firstCell) {
-                removeRepository(firstCell.innerText);
+            let row = (target.parentElement as HTMLTableCellElement).parentElement as HTMLTableRowElement;
+            let gitRepositoryPath = row.cells.item(0)?.innerText;
+            if (gitRepositoryPath) {
+                removeRepository(gitRepositoryPath);
             }
         }
 
         if ('C' === target.value) { // Config
-            const row = (target.parentElement as HTMLTableCellElement).parentElement as HTMLTableRowElement;
+            let row = (target.parentElement as HTMLTableCellElement).parentElement as HTMLTableRowElement;
+            let gitRepositoryPath = row.cells.item(0)?.innerText as string;
+            let repository = getStoreRepository(gitRepositoryPath) as TypedStoreRepository;
+            if (!repository) {
+                return;
+            }
 
-            modalWindowContent.innerText = row.innerHTML; // todo
-            modalWindow.showModal();
+            intervalInput.value = repository.interval.toString();
+            intervalInput.dataset.repository = gitRepositoryPath;
+
+            refsSelect.innerHTML = '';
+            refsSelect.dataset.repository = gitRepositoryPath;
+
+            listRemotes(gitRepositoryPath).then(remotes => {
+                remotes.forEach(remote => {
+                    let g = document.createElement('optgroup');
+                    g.label = remote.name;
+                    refsSelect.add(g);
+
+                    remote.branches.forEach(branch => {
+
+                        let isSelected = false;
+                        let lastCommit = undefined;
+                        for (let storeRemote of repository.remotes) {
+                            if (storeRemote.name === remote.name) {
+                                let b = storeRemote.branches.find(b => b.name === branch);
+                                if (b) {
+                                    isSelected = true;
+                                    lastCommit = b.lastCommit;
+                                    break;
+                                }
+                            }
+                        }
+
+                        let o = document.createElement('option');
+                        o.dataset.remote = remote.name;
+                        o.dataset.lastCommit = lastCommit || '';
+                        o.value = branch;
+                        o.selected = isSelected;
+                        o.text = branch;
+
+                        refsSelect.add(o);
+                    });
+                });
+
+                modalWindow.showModal();
+            });
         }
     });
 
     modalWindowCloseBtn.addEventListener('click', () => modalWindow.close());
+
+    refsSelect.addEventListener('change', (e) => {
+        let repositoryPath = refsSelect.dataset.repository as string;
+        let repository = getStoreRepository(repositoryPath);
+        if (!repository) {
+            return;
+        }
+        repository.remotes = [];
+
+        for (let i = 0; i < refsSelect.selectedOptions.length; ++i) {
+            let selectedOption = refsSelect.selectedOptions.item(i) as HTMLOptionElement;
+
+            let remote = repository.remotes.find(remote => remote.name === selectedOption.dataset.remote);
+            if (remote) {
+                remote.branches.push({
+                    name: selectedOption.value,
+                    lastCommit: selectedOption.dataset.lastCommit || new Date().toISOString()
+                });
+            } else {
+                remote = {
+                    name: selectedOption.dataset.remote as string,
+                    branches: [{
+                        name: selectedOption.value,
+                        lastCommit: selectedOption.dataset.lastCommit || new Date().toISOString()
+                    }]
+                };
+                repository.remotes.push(remote);
+            }
+        }
+        console.log(repository);
+
+        ipcRenderer.send('store.repository', repository);
+    });
+
+    intervalInput.addEventListener('change', () => {
+        let repositoryPath = refsSelect.dataset.repository as string;
+        let repository = getStoreRepository(repositoryPath);
+        if (!repository) {
+            return;
+        }
+
+        repository.interval = Number(intervalInput.value);
+
+        ipcRenderer.send('store.repository', repository);
+    });
 });

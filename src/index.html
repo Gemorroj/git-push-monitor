@@ -43,6 +43,10 @@
         input[type="button"] {
             cursor: pointer;
         }
+
+        select {
+            width: 100%;
+        }
     </style>
 </head>
 <body>
@@ -59,7 +63,14 @@
 </fieldset>
 
 <dialog id="modalWindow">
-    <div id="modalWindowContent"></div>
+    <div>
+        <label for="interval">Interval (seconds)</label>
+        <input id="interval" type="number" step="1" />
+        <br />
+
+        <label for="refs">Choose branches</label>
+        <select multiple="multiple" id="refs"></select>
+    </div>
     <input type="button" id="modalWindowCloseBtn" value="Close" />
 </dialog>
 </body>
