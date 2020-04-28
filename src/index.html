@@ -33,6 +33,10 @@
             background: #99bcff;
         }
 
+        #repositories td:nth-child(1) {
+            cursor: pointer;
+        }
+
         #repositories td input:nth-child(1) {
             background-color: #090;
         }
@@ -53,7 +57,8 @@
 <fieldset>
     <legend>Repositories</legend>
     <input type="button" id="repositoriesAddBtn" value="Add git repository" />
-    <br />
+    <br /><br />
+
     <table id="repositories">
         <tr>
             <th>Path</th>
@@ -66,11 +71,13 @@
     <div>
         <label for="interval">Interval (seconds)</label>
         <input id="interval" type="number" step="1" />
-        <br />
+        <br /> <br />
 
         <label for="refs">Choose branches</label>
         <select multiple="multiple" id="refs"></select>
     </div>
+    <br />
+
     <input type="button" id="modalWindowCloseBtn" value="Close" />
 </dialog>
 </body>

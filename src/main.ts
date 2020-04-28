@@ -2,9 +2,7 @@ import {app, Menu, Tray, BrowserWindow, dialog, ipcMain, Notification, MenuItem,
 import {store, TypedStoreRepository} from './store';
 import * as path from 'path'
 import {setInterval} from 'timers';
-import git from 'isomorphic-git';
-import http from 'isomorphic-git/http/node';
-import * as fs from 'fs';
+import {fetchRemotes, logRemoteBranch} from './git';
 
 // all intervals
 const intervals: NodeJS.Timeout[] = [];
@@ -23,14 +21,16 @@ ipcMain.on('store.repository', (event, arg: TypedStoreRepository) => {
     processListeners();
 });
 
+
 const onExit = (menuItem: MenuItem, browserWindow: BrowserWindow, event: KeyboardEvent) => {
     app.quit();
 };
 const onAbout = (menuItem: MenuItem, browserWindow: BrowserWindow, event: KeyboardEvent) => {
     dialog.showMessageBoxSync({
+        title: 'About',
         type: 'info',
-        message: 'Version: 1.0.0',
-        detail: 'details',
+        message: 'Git push monitor',
+        detail: 'Version: 1.0.0\nhttps://github.com/Gemorroj/git-push-monitor',
     });
 };
 const onShow = (menuItem: MenuItem, browserWindow: BrowserWindow, event: KeyboardEvent) => {
@@ -45,32 +45,21 @@ const onShow = (menuItem: MenuItem, browserWindow: BrowserWindow, event: Keyboar
     })).loadFile(path.join(app.getAppPath(), 'index.html'));
 };
 
+
+
 const process = (repository: TypedStoreRepository) => {
-
-    let p = new Promise((resolve, reject) => {
-        let promises: Promise<any>[] = [];
-        repository.remotes.forEach(remote => {
-            promises.push(git.fetch({
-                fs,
-                http,
-                dir: repository.path,
-                remote: remote.name
-            }));
-        });
-        Promise.all(promises).then(() => {
-            resolve();
-        });
-    });
-
-    p.then(() => {
+    fetchRemotes(
+        repository.path,
+        repository.remotes.map(remote => remote.name)
+    ).then(() => {
         repository.remotes.forEach(remote => {
             remote.branches.forEach(branch => {
-                git.log({
-                    fs,
-                    dir: repository.path,
-                    ref: `remotes/${remote.name}/${branch.name}`,
-                    since: new Date(branch.lastCommit)
-                }).then(logData => { // todo: modify lastCommit date
+                logRemoteBranch(
+                    repository.path,
+                    remote.name,
+                    branch.name,
+                    new Date(branch.lastCommit)
+                ).then(logData => { // todo: modify lastCommit date
                     for (const log of logData) {
                         new Notification({
                             title: repository.path,
@@ -81,9 +70,7 @@ const process = (repository: TypedStoreRepository) => {
             });
         });
     });
-
 };
-
 const processListeners = () => {
     for (let interval of intervals) {
         clearInterval(interval);
@@ -98,6 +85,7 @@ const processListeners = () => {
         intervals.push(intervalObj);
     });
 };
+
 
 
 app.whenReady().then(() => {

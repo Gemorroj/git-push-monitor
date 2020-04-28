@@ -73,3 +73,8 @@ export const store = new Store<TypedStore>({
         }
     }
 });
+
+
+export const getStoreRepository = (gitPath: string): TypedStoreRepository|undefined => {
+    return store.get('repositories').find(item => item.path === gitPath);
+};
