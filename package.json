@@ -14,9 +14,9 @@
     },
     "devDependencies": {
         "copyfiles": "^2.3.0",
-        "electron": "^9.0.0",
+        "electron": "^9.0.2",
         "electron-builder": "^22.7.0",
-        "typescript": "^3.9.3"
+        "typescript": "^3.9.5"
     },
     "engines": {
         "node": ">=12"
