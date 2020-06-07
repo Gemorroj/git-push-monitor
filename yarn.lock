@@ -622,10 +622,10 @@ electron-publish@22.7.0:
     lazy-val "^1.0.4"
     mime "^2.4.5"
 
-electron-store@^5.1.1:
-  version "5.1.1"
-  resolved "https://registry.yarnpkg.com/electron-store/-/electron-store-5.1.1.tgz#3040e5b4ad25d2e4caea59d505646c1e7c94a09b"
-  integrity sha512-FLidOVE8JVCdJXHd7xY/JojKJ2r2WNmWt0O/LlX2LuSVV7dkG2RSy2/Gm2LFw8OKDfrNBd9c/s4X1ikMrJEUKg==
+electron-store@^5.2.0:
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/electron-store/-/electron-store-5.2.0.tgz#a15718fc1fa21acfd07af55f9b94f9fa6a536665"
+  integrity sha512-iU3WDqEDAYNYR9XV7p0tJajq/zs9z7Nrn0sAoR5nDyn8h/9dr9kusKbTxD8NtVEBD1TB1pkGMqcbIt/y6knDwQ==
   dependencies:
     conf "^6.2.1"
     type-fest "^0.7.1"
@@ -1004,10 +1004,10 @@ isbinaryfile@^4.0.6:
   resolved "https://registry.yarnpkg.com/isbinaryfile/-/isbinaryfile-4.0.6.tgz#edcb62b224e2b4710830b67498c8e4e5a4d2610b"
   integrity sha512-ORrEy+SNVqUhrCaal4hA4fBzhggQQ+BaLntyPOdoEiwlKZW9BZiJXjg3RMiruE4tPEI3pyVPpySHQF/dKWperg==
 
-isomorphic-git@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/isomorphic-git/-/isomorphic-git-1.4.0.tgz#20bd3007751034d2e3fb4547cc857881d0d98083"
-  integrity sha512-8IIfRQR+7dl3tALg2VuxebkI1gJqIcGJ4t3tu1OltQhUA303W2qi3B4zH6fHDS0j353pshAWrmL81L2v6wzHXQ==
+isomorphic-git@^1.4.1:
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/isomorphic-git/-/isomorphic-git-1.4.1.tgz#b498eaaa13765cecef6e0364337eb25e0c950305"
+  integrity sha512-s3pgqsJsWLA4shevgxLdRXuz6pyarPhBOpXnuw0iey9A/nYfs8ygZegieKuvDPJqyje/BHwKZXAZ/nYwZAJrwg==
   dependencies:
     async-lock "^1.1.0"
     clean-git-ref "^2.0.1"

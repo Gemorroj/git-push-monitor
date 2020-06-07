@@ -9,8 +9,8 @@
     },
     "license": "MIT",
     "dependencies": {
-        "electron-store": "^5.1.1",
-        "isomorphic-git": "^1.4.0"
+        "electron-store": "^5.2.0",
+        "isomorphic-git": "^1.4.1"
     },
     "devDependencies": {
         "copyfiles": "^2.3.0",
