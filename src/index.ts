@@ -1,4 +1,4 @@
-import {DEFAULT_REPOSITORY_INTERVAL, store, TypedStoreRepository, getStoreRepository} from './store';
+import {DEFAULT_REPOSITORY_INTERVAL, getStoreRepository, store, TypedStoreRepository} from './store';
 import {ipcRenderer, remote} from 'electron';
 import {listRefs} from './git';
 
@@ -12,7 +12,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     const removeRepository = (path: string) => {
         let storeRepositories = store.get('repositories');
-        storeRepositories = storeRepositories.filter(item => item.path !== path);
+        storeRepositories = storeRepositories?.filter(item => item.path !== path);
 
         ipcRenderer.send('store.repositories', storeRepositories);
 
@@ -37,7 +37,7 @@ window.addEventListener('DOMContentLoaded', () => {
         }
         let storeRepositories = store.get('repositories');
 
-        storeRepositories.push({
+        storeRepositories?.push({
             path: path,
             interval: DEFAULT_REPOSITORY_INTERVAL,
             remotes: []
@@ -99,7 +99,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // initialization
     (() => {
-        store.get('repositories').forEach(repository => {
+        store.get('repositories')?.forEach(repository => {
             addRepositoryToView(repository.path);
         });
     })();

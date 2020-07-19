@@ -1,4 +1,4 @@
-import {app, Menu, Tray, BrowserWindow, dialog, ipcMain, Notification, MenuItem, KeyboardEvent} from 'electron';
+import {app, BrowserWindow, dialog, ipcMain, KeyboardEvent, Menu, MenuItem, Notification, Tray} from 'electron';
 import {store, TypedStoreRepository} from './store';
 import * as path from 'path'
 import {setInterval} from 'timers';
@@ -12,7 +12,7 @@ ipcMain.on('store.repositories', (event, arg: TypedStoreRepository[]) => {
     processListeners();
 });
 ipcMain.on('store.repository', (event, arg: TypedStoreRepository) => {
-    store.set('repositories', store.get('repositories').map(item => {
+    store.set('repositories', store.get('repositories')?.map(item => {
         if (item.path === arg.path) {
             item = arg;
         }
@@ -22,10 +22,10 @@ ipcMain.on('store.repository', (event, arg: TypedStoreRepository) => {
 });
 
 
-const onExit = (menuItem: MenuItem, browserWindow: BrowserWindow, event: KeyboardEvent) => {
+const onExit = (menuItem: MenuItem, browserWindow: BrowserWindow|undefined, event: KeyboardEvent) => {
     app.quit();
 };
-const onAbout = (menuItem: MenuItem, browserWindow: BrowserWindow, event: KeyboardEvent) => {
+const onAbout = (menuItem: MenuItem, browserWindow: BrowserWindow|undefined, event: KeyboardEvent) => {
     dialog.showMessageBoxSync({
         title: 'About',
         type: 'info',
@@ -33,7 +33,7 @@ const onAbout = (menuItem: MenuItem, browserWindow: BrowserWindow, event: Keyboa
         detail: 'Version: 1.0.0\nhttps://github.com/Gemorroj/git-push-monitor',
     });
 };
-const onShow = (menuItem: MenuItem, browserWindow: BrowserWindow, event: KeyboardEvent) => {
+const onShow = (menuItem: MenuItem, browserWindow: BrowserWindow|undefined, event: KeyboardEvent) => {
     (new BrowserWindow({
         width: 800,
         height: 600,
@@ -76,7 +76,7 @@ const processListeners = () => {
         clearInterval(interval);
     }
 
-    store.get('repositories').forEach(repository => {
+    store.get('repositories')?.forEach(repository => {
         process(repository);
         const intervalObj = setInterval(() => {
             process(repository);

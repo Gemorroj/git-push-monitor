@@ -1,4 +1,4 @@
-import * as Store from 'electron-store'
+import * as Store from 'electron-store';
 
 export const DEFAULT_REPOSITORY_INTERVAL = 60;
 
@@ -76,5 +76,5 @@ export const store = new Store<TypedStore>({
 
 
 export const getStoreRepository = (gitPath: string): TypedStoreRepository|undefined => {
-    return store.get('repositories').find(item => item.path === gitPath);
+    return store.get('repositories')?.find(item => item.path === gitPath);
 };

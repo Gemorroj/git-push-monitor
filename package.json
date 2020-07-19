@@ -9,14 +9,14 @@
     },
     "license": "MIT",
     "dependencies": {
-        "electron-store": "^5.2.0",
-        "isomorphic-git": "^1.4.1"
+        "electron-store": "^6.0.0",
+        "isomorphic-git": "^1.7.3"
     },
     "devDependencies": {
         "copyfiles": "^2.3.0",
-        "electron": "^9.0.2",
+        "electron": "^9.1.0",
         "electron-builder": "^22.7.0",
-        "typescript": "^3.9.5"
+        "typescript": "^3.9.7"
     },
     "engines": {
         "node": ">=12"
