@@ -10,11 +10,11 @@
     "license": "MIT",
     "dependencies": {
         "electron-store": "^6.0.0",
-        "isomorphic-git": "^1.7.3"
+        "isomorphic-git": "^1.7.4"
     },
     "devDependencies": {
         "copyfiles": "^2.3.0",
-        "electron": "^9.1.0",
+        "electron": "^9.1.1",
         "electron-builder": "^22.7.0",
         "typescript": "^3.9.7"
     },
